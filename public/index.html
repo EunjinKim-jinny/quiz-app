@@ -1,10 +1,73 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>문제 풀이 사이트</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 2rem;
+      background: linear-gradient(to bottom right, #e6f0ff, #ffffff);
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      max-width: 800px;
+      margin: auto;
+    }
+    .question {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+    .options li {
+      margin: 0.5rem 0;
+    }
+    button {
+      padding: 0.7rem 1.5rem;
+      margin-top: 1.5rem;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #357ab8;
+    }
+    #result {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    #username-container {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    #leaderboard {
+      margin-top: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    th {
+      background-color: #e0e0e0;
+    }
+  </style>
 </head>
 <body>
   <div class="quiz-container" id="main-container">
@@ -36,13 +99,13 @@
     }
 
     async function fetchLeaderboard() {
-      const res = await fetch('/leaderboard');
+      const res = await fetch('http://localhost:3000/leaderboard');
       const data = await res.json();
       return data;
     }
 
     async function submitScore(name, score, answers, timeTaken) {
-      await fetch('/submit-score', {
+      await fetch('http://localhost:3000/submit-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, score, answers, timeTaken })
@@ -69,7 +132,7 @@
       options.innerHTML = '';
       q.options.forEach((opt, idx) => {
         const li = document.createElement('li');
-        li.innerHTML = `<label><input type="radio" name="opt" value="\${idx}" /> \${opt}</label>`;
+        li.innerHTML = `<label><input type="radio" name="opt" value="${idx}" /> ${opt}</label>`;
         options.appendChild(li);
       });
     }
@@ -99,21 +162,21 @@
       resultScreen.style.display = 'block';
       resultScreen.innerHTML = `
         <h2>퀴즈 종료!</h2>
-        <p><strong>\${username}</strong>님의 점수는 \${score} / \${questions.length}입니다.</p>
-        <p>총 소요 시간: \${timeTaken}초</p>
+        <p><strong>${username}</strong>님의 점수는 ${score} / ${questions.length}입니다.</p>
+        <p>총 소요 시간: ${timeTaken}초</p>
         <h3>실시간 순위표</h3>
         <table>
           <thead>
             <tr><th>순위</th><th>이름</th><th>점수</th><th>시간(초)</th><th>제출시각</th></tr>
           </thead>
           <tbody>
-            \${leaderboard.map((entry, i) => `
+            ${leaderboard.map((entry, i) => `
               <tr>
-                <td>\${i + 1}</td>
-                <td>\${entry.name}</td>
-                <td>\${entry.score}</td>
-                <td>\${entry.timeTaken ?? '-'}</td>
-                <td>\${entry.created_at ? new Date(entry.created_at).toLocaleString('ko-KR') : '-'}</td>
+                <td>${i + 1}</td>
+                <td>${entry.name}</td>
+                <td>${entry.score}</td>
+                <td>${entry.timeTaken ?? '-'}</td>
+                <td>${new Date(entry.created_at).toLocaleString('ko-KR')}</td>
               </tr>`).join('')}
           </tbody>
         </table>
